@@ -1,7 +1,7 @@
 package com.example.Shopping.Services;
 
-import com.example.Shopping.DTOS.OrderRequestDTO.OrderRequestDTO;
-import com.example.Shopping.DTOS.OrderResponseDTO.OrderResponseDTO;
+import com.example.Shopping.DTOs.OrderRequestDTO;
+import com.example.Shopping.DTOs.OrderResponseDTO;
 
 public interface OrderService
 {

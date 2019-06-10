@@ -1,5 +1,6 @@
 package com.example.Shopping.OrderResponse;
 
+
 public class ResponseModel<T>
 {
     private T data;
@@ -14,5 +15,8 @@ public class ResponseModel<T>
 
     public void setData(T data) {
         this.data = data;
+    }
+
+    public ResponseModel() {
     }
 }

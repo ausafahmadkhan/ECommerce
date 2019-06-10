@@ -1,12 +1,13 @@
 package com.example.Shopping.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.Shopping.Mapper.ECommerceServiceMapper;
-import com.example.Shopping.DTOS.OrderRequestDTO.OrderRequestDTO;
-import com.example.Shopping.DTOS.OrderResponseDTO.OrderResponseDTO;
+import com.example.Shopping.DTOs.OrderRequestDTO;
+import com.example.Shopping.DTOs.OrderResponseDTO;
 import com.example.Shopping.OrderRequest.OrderRequest;
 import com.example.Shopping.OrderResponse.Error;
 import com.example.Shopping.OrderResponse.OrderResponse;
@@ -26,7 +27,6 @@ public class AppController
 
     @Autowired
     private OrderService orderService;
-
 
     @RequestMapping(path = "/placeorder", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
     ResponseEntity<ResponseModel<OrderResponse>> placeOrder(@RequestBody OrderRequest orderRequest)

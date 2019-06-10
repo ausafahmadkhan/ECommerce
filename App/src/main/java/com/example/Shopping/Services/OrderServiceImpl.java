@@ -1,7 +1,7 @@
 package com.example.Shopping.Services;
 
-import com.example.Shopping.DTOS.OrderRequestDTO.OrderRequestDTO;
-import com.example.Shopping.DTOS.OrderResponseDTO.OrderResponseDTO;
+import com.example.Shopping.DTOs.OrderRequestDTO;
+import com.example.Shopping.DTOs.OrderResponseDTO;
 import com.example.Shopping.Persistence.Models.InventoryDAO;
 import com.example.Shopping.Persistence.Models.OrderDAO;
 import com.example.Shopping.Persistence.Repositories.InventoryRepository;
@@ -9,6 +9,11 @@ import com.example.Shopping.Persistence.Repositories.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+
+import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Service
 public class OrderServiceImpl implements OrderService
@@ -86,12 +91,20 @@ public class OrderServiceImpl implements OrderService
 
                 //keeping track of all the orders placed.
                 OrderDAO orderDAO = new OrderDAO(orderRequestDTO.getItemId(), orderRequestDTO.getUserId(), orderRequestDTO.getQuantity());
-                orderDAO.setDate(System.currentTimeMillis() + "");
+                orderDAO.setDate(getCurrentTimeUsingDate());
                 orderRepository.save(orderDAO);
                 status = "Order successfully placed";
             }
         }
 
         return status;
+    }
+
+    private String getCurrentTimeUsingDate()
+    {
+        String pattern = "yyyy-MM-dd HH:mm:ssZ";
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        return simpleDateFormat.format(date);
     }
 }

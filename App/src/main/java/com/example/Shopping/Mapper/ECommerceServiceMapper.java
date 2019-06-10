@@ -1,7 +1,7 @@
 package com.example.Shopping.Mapper;
 
-import com.example.Shopping.DTOS.OrderRequestDTO.OrderRequestDTO;
-import com.example.Shopping.DTOS.OrderResponseDTO.OrderResponseDTO;
+import com.example.Shopping.DTOs.OrderRequestDTO;
+import com.example.Shopping.DTOs.OrderResponseDTO;
 import com.example.Shopping.OrderRequest.OrderRequest;
 import com.example.Shopping.OrderResponse.OrderResponse;
 import org.springframework.stereotype.Component;

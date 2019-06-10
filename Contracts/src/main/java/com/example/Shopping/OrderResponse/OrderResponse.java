@@ -3,6 +3,7 @@ package com.example.Shopping.OrderResponse;
 public class OrderResponse
 {
     private String status;
+
     private Error error;
 
     public String getStatus() {

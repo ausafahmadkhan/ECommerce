@@ -1,4 +1,4 @@
-package com.example.Shopping.DTOS.OrderRequestDTO;
+package com.example.Shopping.DTOs;
 
 public class OrderRequestDTO
 {

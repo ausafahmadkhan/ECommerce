@@ -1,6 +1,8 @@
 package com.example.Shopping;
 
-import com.example.Shopping.DTOS.OrderRequestDTO.OrderRequestDTO;
+import com.example.Shopping.DTOs.OrderRequestDTO;
+import com.example.Shopping.OrderRequest.OrderRequest;
+import com.example.Shopping.OrderResponse.ResponseModel;
 import com.example.Shopping.Persistence.Models.InventoryDAO;
 import com.example.Shopping.Persistence.Repositories.InventoryRepository;
 import com.example.Shopping.Services.OrderService;
@@ -8,15 +10,19 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.RestTemplate;
+import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class OrderCreationTest
 {
 
@@ -26,24 +32,52 @@ public class OrderCreationTest
     @Autowired
     private InventoryRepository inventoryRepository;
 
-    @LocalServerPort
-    private int port;
+    @Test
+    public void integrationTest() throws IOException {
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        String url = "http://localhost:8080/ecommerce/placeorder";
+
+        OrderRequest orderRequest1 = new OrderRequest("24", "test_54", 45);
+        HttpEntity<OrderRequest> httpEntity1 = new HttpEntity<>(orderRequest1);
+        ResponseEntity<ResponseModel> responseEntity1 = restTemplate.exchange(url, HttpMethod.POST, httpEntity1, ResponseModel.class);
+        String status1 = ((Map)responseEntity1.getBody().getData()).get("status").toString();
+        Assert.assertEquals("Order successfully placed", status1);
+
+        OrderRequest orderRequest2 = new OrderRequest("24", "test_54", 25);
+        HttpEntity<OrderRequest> httpEntity2 = new HttpEntity<>(orderRequest2);
+        ResponseEntity<ResponseModel> responseEntity2 = restTemplate.exchange(url, HttpMethod.POST, httpEntity2, ResponseModel.class);
+        String status2 = ((Map)responseEntity2.getBody().getData()).get("status").toString();
+        Assert.assertEquals("Only 9 available", status2);
+
+        OrderRequest orderRequest3 = new OrderRequest("24", "test_54", 9);
+        HttpEntity<OrderRequest> httpEntity3 = new HttpEntity<>(orderRequest3);
+        ResponseEntity<ResponseModel> responseEntity3 = restTemplate.exchange(url, HttpMethod.POST, httpEntity3, ResponseModel.class);
+        String status3 = ((Map)responseEntity3.getBody().getData()).get("status").toString();
+        Assert.assertEquals("Order successfully placed", status3);
+
+        OrderRequest orderRequest4 = new OrderRequest("24", "test_54", 2);
+        HttpEntity<OrderRequest> httpEntity4 = new HttpEntity<>(orderRequest4);
+        ResponseEntity<ResponseModel> responseEntity4 = restTemplate.exchange(url, HttpMethod.POST, httpEntity4, ResponseModel.class);
+        String status4 = ((Map)responseEntity4.getBody().getData()).get("status").toString();
+        Assert.assertEquals("Item sold out", status4);
+
+    }
 
     @Test
     public void testrace() throws InterruptedException
     {
-        seedData();
-
         ExecutorService es = Executors.newCachedThreadPool();
         OrderRequestDTO[] orderRequestDTOS = new OrderRequestDTO[5];
 
-        OrderRequestDTO orderRequestDTO1 = new OrderRequestDTO("1", "test_59", 3);
+        OrderRequestDTO orderRequestDTO1 = new OrderRequestDTO("1", "test_59", 20);
         orderRequestDTOS[0] = orderRequestDTO1;
 
-        OrderRequestDTO orderRequestDTO2 = new OrderRequestDTO("2", "test_59", 3);
+        OrderRequestDTO orderRequestDTO2 = new OrderRequestDTO("2", "test_59", 20);
         orderRequestDTOS[1] = orderRequestDTO2;
 
-        OrderRequestDTO orderRequestDTO3 = new OrderRequestDTO("3", "test_59", 3);
+        OrderRequestDTO orderRequestDTO3 = new OrderRequestDTO("3", "test_59", 20);
         orderRequestDTOS[2] = orderRequestDTO3;
 
         OrderRequestDTO orderRequestDTO4 = new OrderRequestDTO("4", "test_59", 3);
@@ -58,13 +92,13 @@ public class OrderCreationTest
         }
 
         es.shutdown();
-        boolean finished = es.awaitTermination(1, TimeUnit.MINUTES);
-        Assert.assertEquals(44, inventoryRepository.findById("test_59").orElse(null).getQuantity());
+        es.awaitTermination(1, TimeUnit.MINUTES);
+        Assert.assertEquals(13, inventoryRepository.findById("test_59").orElse(null).getQuantity());
 
-        cleanUp();
     }
 
-    private void seedData()
+    @Before
+    public void seedData()
     {
         char ch = 'a';
         for (int i = 50; i <= 60; i++)
@@ -75,7 +109,8 @@ public class OrderCreationTest
         }
     }
 
-    private void cleanUp()
+    @After
+    public void cleanUp()
     {
         for (int i = 50; i <= 60; i++)
         {
