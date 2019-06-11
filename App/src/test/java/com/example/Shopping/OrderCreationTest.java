@@ -2,6 +2,7 @@ package com.example.Shopping;
 
 import com.example.Shopping.DTOs.OrderRequestDTO;
 import com.example.Shopping.OrderRequest.OrderRequest;
+import com.example.Shopping.OrderResponse.OrderResponse;
 import com.example.Shopping.OrderResponse.ResponseModel;
 import com.example.Shopping.Persistence.Models.InventoryDAO;
 import com.example.Shopping.Persistence.Repositories.InventoryRepository;
@@ -10,13 +11,12 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -41,26 +41,30 @@ public class OrderCreationTest
 
         OrderRequest orderRequest1 = new OrderRequest("24", "test_54", 45);
         HttpEntity<OrderRequest> httpEntity1 = new HttpEntity<>(orderRequest1);
-        ResponseEntity<ResponseModel> responseEntity1 = restTemplate.exchange(url, HttpMethod.POST, httpEntity1, ResponseModel.class);
-        String status1 = ((Map)responseEntity1.getBody().getData()).get("status").toString();
+        ResponseModel<OrderResponse> responseEntity1 = restTemplate.exchange(url,
+                        HttpMethod.POST, httpEntity1, new ParameterizedTypeReference<ResponseModel<OrderResponse>>() {}).getBody();
+        String status1 = responseEntity1.getData().getStatus();
         Assert.assertEquals("Order successfully placed", status1);
 
         OrderRequest orderRequest2 = new OrderRequest("24", "test_54", 25);
         HttpEntity<OrderRequest> httpEntity2 = new HttpEntity<>(orderRequest2);
-        ResponseEntity<ResponseModel> responseEntity2 = restTemplate.exchange(url, HttpMethod.POST, httpEntity2, ResponseModel.class);
-        String status2 = ((Map)responseEntity2.getBody().getData()).get("status").toString();
+        ResponseModel<OrderResponse> responseEntity2 = restTemplate.exchange(url,
+                HttpMethod.POST, httpEntity2, new ParameterizedTypeReference<ResponseModel<OrderResponse>>() {}).getBody();
+        String status2 = responseEntity2.getData().getStatus();
         Assert.assertEquals("Only 9 available", status2);
 
         OrderRequest orderRequest3 = new OrderRequest("24", "test_54", 9);
         HttpEntity<OrderRequest> httpEntity3 = new HttpEntity<>(orderRequest3);
-        ResponseEntity<ResponseModel> responseEntity3 = restTemplate.exchange(url, HttpMethod.POST, httpEntity3, ResponseModel.class);
-        String status3 = ((Map)responseEntity3.getBody().getData()).get("status").toString();
+        ResponseModel<OrderResponse> responseEntity3 = restTemplate.exchange(url,
+                HttpMethod.POST, httpEntity3, new ParameterizedTypeReference<ResponseModel<OrderResponse>>() {}).getBody();
+        String status3 = responseEntity3.getData().getStatus();
         Assert.assertEquals("Order successfully placed", status3);
 
         OrderRequest orderRequest4 = new OrderRequest("24", "test_54", 2);
         HttpEntity<OrderRequest> httpEntity4 = new HttpEntity<>(orderRequest4);
-        ResponseEntity<ResponseModel> responseEntity4 = restTemplate.exchange(url, HttpMethod.POST, httpEntity4, ResponseModel.class);
-        String status4 = ((Map)responseEntity4.getBody().getData()).get("status").toString();
+        ResponseModel<OrderResponse> responseEntity4 = restTemplate.exchange(url,
+                HttpMethod.POST, httpEntity4, new ParameterizedTypeReference<ResponseModel<OrderResponse>>() {}).getBody();
+        String status4 = responseEntity4.getData().getStatus();
         Assert.assertEquals("Item sold out", status4);
 
     }
